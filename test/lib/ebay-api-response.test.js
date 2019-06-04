@@ -78,4 +78,19 @@ describe('class EbayApiResponse', function () {
         expect(r).to.be.false;
     });
 
+    it('pathExist(["data", "a"])', function () {
+        const r = response.pathExist(["data", "a"]);
+        expect(r).to.be.true;
+    });
+
+    it('pathExist("data.a")', function () {
+        const r = response.pathExist("data.a");
+        expect(r).to.be.true;
+    });
+
+    it('pathExist(["data", "notExists"])', function () {
+        const r = response.pathExist(["data", "notExists"]);
+        expect(r).to.be.false;
+    });
+
 });
