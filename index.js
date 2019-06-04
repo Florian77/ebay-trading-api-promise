@@ -8,6 +8,9 @@ const https = require('https');
 const js2xmlparser = require('js2xmlparser');
 const xml2jsPareseString = require('xml2js').parseString;
 
+const EbayApiRequest = require('./lib/ebay-api-request');
+const EbayApiResponse = require('./lib/ebay-api-response');
+
 const Queue = require('promise-queue');
 let queue = null; // new Queue(25, Infinity);
 
@@ -21,17 +24,6 @@ const appKeySet = {
     devId: '',
     certId: ''
 };
-
-// TODO: load appKeySet from ENV vars
-
-
-module.exports.initQueue = initQueue;
-module.exports.setAppKeySet = setAppKeySet;
-module.exports.setDefaultCompatLevel = setDefaultCompatLevel;
-module.exports.setDefaultSiteId = setDefaultSiteId;
-module.exports.setDebugOutput = setDebugOutput;
-module.exports.newRequest = newRequest;
-module.exports.execute = execute;
 
 
 /**
@@ -290,192 +282,11 @@ function getQueue() {
     return queue;
 }
 
-// TODO: Move classes to external files?
 
-/**
- *
- */
-class EbayApiResponse {
-
-    /**
-     *
-     * @param data
-     */
-    constructor(data) {
-        this.data = data;
-        // console.log(JSON.stringify(data, null, 2));
-    }
-
-    /**
-     *
-     * @returns {boolean}
-     */
-    ackSuccess() {
-        return this.getAck() === 'Success'
-    }
-
-    /**
-     *
-     * @returns {boolean}
-     */
-    ackWarning() {
-        return this.getAck() === 'Warning'
-    }
-
-    /**
-     *
-     * @returns {boolean}
-     */
-    ackFailure() {
-        return this.getAck() === 'Failure'
-    }
-
-    /**
-     *
-     * @returns {string}
-     */
-    getAck() {
-        if (this.data.Ack) {
-            return String(this.data.Ack);
-        }
-        return 'Missing';
-    }
-
-    /**
-     *
-     * @returns {Array}
-     */
-    getErrors() {
-        return this.getArray('Errors');
-    }
-
-    /**
-     *
-     * @param key
-     * @returns {*}
-     */
-    get(key = false) {
-        // TODO: add more key for getting elements from deeper structure
-        return key === false ? this.data : this.data[key];
-    }
-
-    /**
-     *
-     * @param key
-     * @returns {Array}
-     */
-    getArray(key = false) {
-        // TODO: add more key for getting elements from deeper structure
-        if (!Array.isArray(this.get(key))) {
-            return [this.get(key)];
-        } else if (this.get(key)) {
-            return this.get(key);
-        }
-
-        return [];
-    }
-}
-
-/**
- *
- */
-class EbayApiRequest {
-
-    /**
-     *
-     * @param apiCallName
-     * @param compatLevel
-     * @param siteId
-     * @param authToken
-     * @param body
-     * @param retryCount
-     */
-    constructor(apiCallName, {compatLevel = null, siteId = null, authToken = '', body = '', retryCount = 2} = {}) {
-        this.data = {};
-        this.data.apiCallName = apiCallName;
-        this.data.compatLevel = compatLevel ? compatLevel : defaultCompatLevel;
-        this.data.siteId = siteId ? siteId : defaultSiteId;
-        this.data.authToken = authToken;
-        this.data.body = body;
-        this.retryCount = retryCount;
-    }
-
-    /**
-     *
-     * @param value
-     * @returns {*|this}
-     */
-    apiCallName(value = false) {
-        if (value) {
-            this.data.apiCallName = value;
-            return this;
-        }
-        return this.data.apiCallName;
-    }
-
-    /**
-     *
-     * @param value
-     * @returns {*|this}
-     */
-    compatLevel(value = false) {
-        if (value) {
-            this.data.compatLevel = value;
-            return this;
-        }
-        return this.data.compatLevel;
-    }
-
-    /**
-     *
-     * @param value
-     * @returns {*|this}
-     */
-    siteId(value = false) {
-        if (value) {
-            this.data.siteId = value;
-            return this;
-        }
-        return this.data.siteId;
-    }
-
-    /**
-     *
-     * @param value
-     * @returns {*|this}
-     */
-    authToken(value = false) {
-        if (value) {
-            this.data.authToken = value;
-            return this;
-        }
-        return this.data.authToken;
-    }
-
-    /**
-     *
-     * @param value
-     * @returns {*|this}
-     */
-    body(value = false) {
-        if (value) {
-            this.data.body = value;
-            return this;
-        }
-        return this.data.body;
-    }
-
-    markRequestSend() {
-        this.retryCount -= 1;
-    }
-
-    retryAllowed() {
-        return this.retryCount > 0;
-    }
-
-    // TODO: at debug output remove token from String
-    /*toString() {
-
-    }*/
-}
-
+module.exports.initQueue = initQueue;
+module.exports.setAppKeySet = setAppKeySet;
+module.exports.setDefaultCompatLevel = setDefaultCompatLevel;
+module.exports.setDefaultSiteId = setDefaultSiteId;
+module.exports.setDebugOutput = setDebugOutput;
+module.exports.newRequest = newRequest;
+module.exports.execute = execute;
