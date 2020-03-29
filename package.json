@@ -14,17 +14,16 @@
   },
   "author": "Florian Tölle",
   "dependencies": {
-    "js2xmlparser": "^3.0.0",
+    "js2xmlparser": "^4.0.1",
     "promise-queue": "^2.2.5",
-    "ramda": "^0.26.1",
+    "ramda": "^0.27.0",
     "wrap-array": "^1.0.0",
     "xml2js": "^0.4.23"
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "lodash": "^4.17.15",
-    "mocha": "^6.2.3",
-    "moment": "^2.22.2"
+    "mocha": "^7.1.1",
+    "moment": "^2.24.0"
   },
   "license": "MIT"
 }
