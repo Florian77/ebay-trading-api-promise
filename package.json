@@ -1,6 +1,6 @@
 {
   "name": "ebay-trading-api-promise",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "nodejs ebay trading api module with promise support",
   "main": "index.js",
   "scripts": {
