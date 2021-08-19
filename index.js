@@ -235,9 +235,12 @@ function createXmlRequestBody(request) {
     const xml = js2xmlparser.parse(xmlRootTag, data, {
         declaration: {
             encoding: 'UTF-8'
-        }
+        },
+        cdataKeys: request.cdataKeys(),
     });
-    // console.log('createXmlRequestBody() xml:',xml);
+    if (request.logXmlRequest() === true) {
+        console.log(`XML Request [${request.apiCallName()}]`, xml);
+    }
     return xml.replace(
         '<' + xmlRootTag + '>',
         '<' + xmlRootTag + ' xmlns="urn:ebay:apis:eBLBaseComponents">'
@@ -297,7 +300,17 @@ class EbayApiRequest {
      * @param body
      * @param retryCount
      */
-    constructor(apiCallName, {compatLevel = null, siteId = null, authToken = '', body = '', retryCount = 2} = {}) {
+    constructor(
+        apiCallName,
+        {
+            compatLevel = null,
+            siteId = null,
+            authToken = '',
+            body = '',
+            retryCount = 2,
+            cdataKeys = [],
+            logXmlRequest = false,
+        } = {}) {
         this.data = {};
         this.data.apiCallName = apiCallName;
         this.data.compatLevel = compatLevel ? compatLevel : defaultCompatLevel;
@@ -305,6 +318,9 @@ class EbayApiRequest {
         this.data.authToken = authToken;
         this.data.body = body;
         this.retryCount = retryCount;
+        this.config = {};
+        this.config.cdataKeys = cdataKeys;
+        this.config.logXmlRequest = logXmlRequest;
     }
 
     /**
@@ -380,13 +396,27 @@ class EbayApiRequest {
         return this.retryCount > 0;
     }
 
+    cdataKeys(value = false) {
+        if (value !== false) {
+            this.config.cdataKeys = value;
+            return this;
+        }
+        return this.config.cdataKeys;
+    }
+
+    logXmlRequest(value = false) {
+        if (value !== false) {
+            this.config.logXmlRequest = value;
+            return this;
+        }
+        return this.config.logXmlRequest;
+    }
+
     // TODO: at debug output remove token from String
     /*toString() {
 
     }*/
 }
-
-
 
 
 module.exports.initQueue = initQueue;
